@@ -20,16 +20,25 @@ def histo(img: np.ndarray, bins: int = 256):
     return pix_values
 
 def compare_histo(org, new):
+    """method for comparing the difference between two histograms"""
+
     diff = 0
     org_value = 0
     new_value = 0
     max_value = 0
+    # loop through the histograms
     for i in range(len(org)):
+        # Add up the total for both histograms
         org_value += org[i]
         new_value += new[i]
+        # get the absolute value for the difference between the histograms
         diff += abs(org[i]-new[i])
+        # set the highest values to be the max values
         max_value = new_value if new_value > org_value else org_value
-    return diff/(max_value * 2)
+
+    #return the difference between the two histograms divided by the twice the max value
+    # to get a value between 0 and 1, which is the percentage of difference
+    return 1 - (diff/(max_value * 2))
 
 
 def plot_histo(a, img: np.ndarray):
