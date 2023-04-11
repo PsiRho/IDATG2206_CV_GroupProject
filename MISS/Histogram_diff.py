@@ -84,7 +84,7 @@ def compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
-    return correlation
+    return np.round(correlation/len(hist1), 3)
 
 
 def plot_histo(a, img: np.ndarray):
@@ -95,17 +95,46 @@ def plot_histo(a, img: np.ndarray):
     plt.show()
 
 
+
+def compare_img(compression_type, correlation):
+    """method for comparing the histogram for the two images"""
+
+    # loop through the compression types
+    for compression in range(1, 7):
+        # loop through the pictures
+        for picture in range(1, 24):
+            # making sure the picture number is 2 digits
+            if picture < 10:
+                picture = f"0{picture}"
+            # making path to the original image
+            org = cv2.imread(f'../CIDIQ_Dataset/Images/Original/final{picture}.bmp')
+            for i in range(5):
+                # making path to the image to compare with original
+                path = f'../CIDIQ_Dataset/Images/reproduction/{compression_type[compression]}/final{picture}_d{compression}_l{i + 1}.bmp'
+                # reading the image
+                new = cv2.imread(path)
+                # getting the histogram correlation
+                diff = compare_hist_correlation(org, new)
+                # appending the correlation to the list
+                correlation.append(diff)
+                # printing the correlation
+                #print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+
 def main():
     # Read image
     org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
     new = cv2.imread('../CIDIQ_Dataset/Images/Original/final02.bmp')
 
-    b = histo(new)
-    a = histo(org)
-    diff = compare_histo(a, b)
-    print(diff)
-    # plot_histo(org)
-    print()
+    # compression type
+    # compression = 4
+    # picture number
+    # picture = "05"
+
+    # making array for all correlation values
+    ghetto_correlation = []
+    compare_img(compression_type, ghetto_correlation)
+    print(len(ghetto_correlation))
+    print(ghetto_correlation)
 
 
 if __name__ == '__main__':
