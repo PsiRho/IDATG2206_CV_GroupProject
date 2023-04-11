@@ -17,7 +17,7 @@
 %If you want to add your own metric see example on line 62. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [] = RunMetrics(d)
+function [] = RunMetrics1(d)
 
 warning off
 
@@ -77,7 +77,7 @@ for i =1:length(dirDistortion) %going through the different distortions
 %             end %end if    
             
             a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
-            if a==1 %If a ==1 then run the metric
+            if a==0 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%PSNR%%%  
                 [outputvalue] = PSNR(rgb2gray(IO),rgb2gray(IR)); %running PSNR metric. using RGB2gray to convert to a grayscale image. 
@@ -90,6 +90,19 @@ for i =1:length(dirDistortion) %going through the different distortions
             if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%Add your metric here%%%  
+                % import python module
+                py.importlib.import_module('Histogram_diff')
+
+                % Convert array
+                IO = rgb2gray(IO)
+                IR = rgb2gray(IR)
+
+                IO_np = py.numpy.array(IO)
+                IR_np = py.numpy.array(IR)
+
+                [outputvalue] = py.Histogram_diff.compare_hist_correlation(IO_np, IR_np);
+                Results.py(counter)=outputvalue;
+                clear outputvalue
             
             end %end if   
             
