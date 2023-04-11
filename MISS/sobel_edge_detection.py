@@ -2,7 +2,8 @@ import cv2 as cv
 import numpy as np
 from MISS.otsus import otsus
 
-image = cv.imread('../CIDIQ_Dataset/Images/Original/final07.bmp')
+org = cv.imread('../CIDIQ_Dataset/Images/Original/final07.bmp')
+comp = cv.imread('../CIDIQ_Dataset/Images/Reproduction/3_Poisson_Noise/final02_d3_l1.bmp')
 
 def sobel_edge_detection(img):
 
@@ -29,20 +30,33 @@ def sobel_edge_detection(img):
     cv.imshow('Original', img)
     cv.waitKey(0)
 
-    I = np.uint8(I)
+    #I = np.uint8(I)
     cv.imshow('Filtered Image', I)
     cv.waitKey(0)
 
     thresh = otsus(I, 256)
-    print(thresh)
-    #B = np.maximum(I, thresh)
-    #B[B == np.round(thresh)] = 0
     I[I < thresh] = 0
     I[I > thresh] = 255
 
-    #B = cv.threshold(B, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
     cv.imshow('Edge detected Image', I)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-sobel_edge_detection(image)
+    return I
+
+original = sobel_edge_detection(org)
+manipulated = sobel_edge_detection(comp)
+
+def get_score(original, copy):
+    o_arr = original.flatten()
+    m_arr = copy.flatten()
+    unlike = 0
+
+    for i in range(1, len(o_arr)):
+        if o_arr[i] != m_arr[i]:
+            unlike += 1
+
+    print(1 - unlike/((len(o_arr)+len(m_arr))/2))
+
+    return 1 - unlike/((len(o_arr)+len(m_arr))/2)
+get_score(original, manipulated)
