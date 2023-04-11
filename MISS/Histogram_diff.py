@@ -54,7 +54,7 @@ def compare_hist_correlation(img1, img2):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
-    return correlation
+    return np.round(correlation/len(hist1), 3)
 
 
 def plot_histo(a, img: np.ndarray):
@@ -66,18 +66,35 @@ def plot_histo(a, img: np.ndarray):
 
 
 
+def compare_img(org, picture, compression_type, compression):
+    """method for comparing the histogram for the two images"""
+    for i in range(5):
+        # making path to the image to compare with original
+        path = f'../CIDIQ_Dataset/Images/reproduction/{compression_type[compression]}/final{picture}_d{compression}_l{i + 1}.bmp'
+        # reading the image
+        new = cv2.imread(path)
+        # getting the histogram correlation
+        diff = compare_hist_correlation(org, new)
+        # printing the correlation
+        print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+
 def main():
-    # Read image
-    org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-    new = cv2.imread('../CIDIQ_Dataset/Images/Original/final02.bmp')
+    # dictionary for compression types
+    compression_type = {
+        1: "1_JPEG2000_Compression",
+        2: "2_JPEG_Compression",
+        3: "3_Poisson_Noise",
+        4: "4_Gaussian_Blur",
+        5: "5_SGCK_Gamut_Mapping",
+        6: "6_DeltaE_Gamut_Mapping",
+    }
+    # compression type
+    compression = 4
+    # picture number
+    picture = "05"
 
-    b = histo(new)
-    a = histo(org)
-    diff = compare_histo(a, b)
-    print(diff)
-    #plot_histo(org)
-    print()
-
+    org = cv2.imread(f'../CIDIQ_Dataset/Images/Original/final{picture}.bmp')
+    compare_img(org, picture, compression_type, compression)
 
 
 if __name__ == '__main__':
