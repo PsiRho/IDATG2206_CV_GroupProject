@@ -66,17 +66,29 @@ def plot_histo(a, img: np.ndarray):
 
 
 
-def compare_img(org, picture, compression_type, compression):
+def compare_img(compression_type, correlation):
     """method for comparing the histogram for the two images"""
-    for i in range(5):
-        # making path to the image to compare with original
-        path = f'../CIDIQ_Dataset/Images/reproduction/{compression_type[compression]}/final{picture}_d{compression}_l{i + 1}.bmp'
-        # reading the image
-        new = cv2.imread(path)
-        # getting the histogram correlation
-        diff = compare_hist_correlation(org, new)
-        # printing the correlation
-        print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+
+    # loop through the compression types
+    for compression in range(1, 7):
+        # loop through the pictures
+        for picture in range(1, 24):
+            # making sure the picture number is 2 digits
+            if picture < 10:
+                picture = f"0{picture}"
+            # making path to the original image
+            org = cv2.imread(f'../CIDIQ_Dataset/Images/Original/final{picture}.bmp')
+            for i in range(5):
+                # making path to the image to compare with original
+                path = f'../CIDIQ_Dataset/Images/reproduction/{compression_type[compression]}/final{picture}_d{compression}_l{i + 1}.bmp'
+                # reading the image
+                new = cv2.imread(path)
+                # getting the histogram correlation
+                diff = compare_hist_correlation(org, new)
+                # appending the correlation to the list
+                correlation.append(diff)
+                # printing the correlation
+                #print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
 
 def main():
     # dictionary for compression types
@@ -88,13 +100,17 @@ def main():
         5: "5_SGCK_Gamut_Mapping",
         6: "6_DeltaE_Gamut_Mapping",
     }
-    # compression type
-    compression = 4
-    # picture number
-    picture = "05"
 
-    org = cv2.imread(f'../CIDIQ_Dataset/Images/Original/final{picture}.bmp')
-    compare_img(org, picture, compression_type, compression)
+    # compression type
+    # compression = 4
+    # picture number
+    # picture = "05"
+
+    # making array for all correlation values
+    ghetto_correlation = []
+    compare_img(compression_type, ghetto_correlation)
+    print(len(ghetto_correlation))
+    print(ghetto_correlation)
 
 
 if __name__ == '__main__':
