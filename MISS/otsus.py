@@ -1,5 +1,5 @@
 import numpy as np
-from MISS.Histogram_diff import histo
+from MISS.histogram_diff import histo
 import cv2 as cv
 
 image = cv.imread('../CIDIQ_Dataset/Images/Original/final02.bmp')
