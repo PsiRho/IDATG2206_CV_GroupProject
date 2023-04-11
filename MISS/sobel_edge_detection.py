@@ -1,7 +1,8 @@
 import cv2 as cv
 import numpy as np
+from MISS.otsus import otsus
 
-image = cv.imread('../CIDIQ_Dataset/Images/Original/final02.bmp')
+image = cv.imread('../CIDIQ_Dataset/Images/Original/final07.bmp')
 
 def sobel_edge_detection(img):
 
@@ -25,16 +26,22 @@ def sobel_edge_detection(img):
             # Magnitude of vector
             I[i+1, j+1] = np.sqrt(Gx**2 + Gy**2)
 
+    cv.imshow('Original', img)
+    cv.waitKey(0)
+
     I = np.uint8(I)
     cv.imshow('Filtered Image', I)
     cv.waitKey(0)
 
-    thresh = 10
-    B = np.maximum(I, thresh)
-    B[B == np.round(thresh)] = 0
+    thresh = otsus(I, 256)
+    print(thresh)
+    #B = np.maximum(I, thresh)
+    #B[B == np.round(thresh)] = 0
+    I[I < thresh] = 0
+    I[I > thresh] = 255
 
-    B = cv.threshold(B, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
-    cv.imshow('Edge detected Image', B)
+    #B = cv.threshold(B, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
+    cv.imshow('Edge detected Image', I)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
