@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')
+orig_img = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
+degraded_img = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')
 
-org = cv2.cvtColor(org, cv2.COLOR_BGR2GRAY)
+orig_img = cv2.cvtColor(orig_img, cv2.COLOR_BGR2GRAY)
 
 
 def absolute_img_diff(img1, img2):
@@ -39,6 +39,6 @@ def kernel_comparison(img1, img2):
     return np.ndarray.sum(np.abs(cv2.filter2D(img1) - cv2.filter2D(img2)))
 
 print("test1")
-print(histogram_comparison(org, shit))
+print(histogram_comparison(orig_img, degraded_img))
 print("test2")
 
