@@ -41,6 +41,22 @@ def compare_histo(org, new):
     return 1 - (diff/(max_value * 2))
 
 
+def compare_hist_correlation(img1, img2):
+    # Calculate histograms for both images
+    hist1, _ = np.histogram(img1, bins=256, range=[0, 256])
+    hist2, _ = np.histogram(img2, bins=256, range=[0, 256])
+
+    # Normalize histograms
+    hist1_norm = hist1 / np.sum(hist1)
+    hist2_norm = hist2 / np.sum(hist2)
+
+    # Compute correlation between the histograms
+    correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
+    correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
+
+    return correlation
+
+
 def plot_histo(a, img: np.ndarray):
     """Plot histogram out of vector"""
     plt.plot(a)
