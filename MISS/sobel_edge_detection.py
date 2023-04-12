@@ -4,7 +4,7 @@ from MISS.otsus import otsus
 
 
 def sobel_edge_detection_own(img):
-    gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
     I = np.zeros_like(gray)
