@@ -33,7 +33,7 @@ def compare_img():
                 # reading the image
                 new = cv2.imread(path)
                 # getting the histogram correlation
-                diff1, diff2 = get_diff(org, new)
+                diff2 = get_diff(org, new)
                 # appending the correlation to the list
                 correlation.append(diff2)
                 # printing the correlation
@@ -42,9 +42,9 @@ def compare_img():
 
 
 def get_diff(org, new):
-    diff1 = hd.compare_hist_correlation(org, new)
-    diff2 = gc.compare_gaussian(org, new)
-    return diff1, diff2
+    diff2 = gc.run_comp(org, new)
+    #diff1 = hd.compare_hist_correlation(org, new)
+    return diff2
 
 def main():
   compare_img()
