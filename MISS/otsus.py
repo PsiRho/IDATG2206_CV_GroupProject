@@ -1,6 +1,4 @@
 import numpy as np
-from MISS.histogram_diff import histo
-import cv2 as cv
 
 
 '''

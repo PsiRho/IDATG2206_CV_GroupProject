@@ -4,7 +4,7 @@ from MISS.otsus import otsus
 
 
 def sobel_edge_detection_own(img):
-    gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
     I = np.zeros_like(gray)
@@ -102,16 +102,17 @@ def get_score(original, copy):
 
 
 def get_diff(org, new):
-    sobels_org = sobel_edge_detection_inbuilt(org)
-    sobels_new = sobel_edge_detection_inbuilt(new)
+    sobels_org = sobel_edge_detection(org)
+    sobels_new = sobel_edge_detection(new)
     diff = get_score(sobels_org, sobels_new)
     return diff
 
-
+"""
 img1 = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
 img2 = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')  #
 og = sobel_edge_detection(img1)
 new = sobel_edge_detection(img2)  #
 print(get_score(og, new))
+"""
 
 
