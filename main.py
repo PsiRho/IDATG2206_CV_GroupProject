@@ -9,6 +9,7 @@ from MISS import sobel_edge_detection as sed
 def compare_img():
     """method for comparing the histogram for the two images"""
 
+    # dictionary for the compression types
     compression_type = {
         1: "1_JPEG2000_Compression",
         2: "2_JPEG_Compression",
@@ -21,9 +22,9 @@ def compare_img():
     correlation = []
 
     # loop through the compression types
-    for compression in range(6, 7):
+    for compression in range(1, 7):
         # loop through the pictures
-        for picture in range(12, 24):
+        for picture in range(1, 24):
             # making sure the picture number is 2 digits
             if picture < 10:
                 picture = f"0{picture}"
@@ -40,11 +41,12 @@ def compare_img():
                 correlation.append(diff)
                 # printing the correlation
                 print(f'{compression_type[compression]} : picture {picture} : level {i + 1} : {diff}')
-                #print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+                # print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
     print(correlation)
 
 
 def get_diff(org, new):
+    """method for getting the difference between the two images"""
     print()
     diff1 = gc.run_comp(org, new)
     print(f"gaussian difference = {diff1}")

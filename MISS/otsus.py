@@ -1,12 +1,13 @@
 import numpy as np
 
-
 '''
 A function for finding the ideal threshold of an image using otsu's algorithm
     Parameters:
         - img - the image of which to find the threshold
         - bins  - the amount of bins for the histogram (more = more accurate)  
 '''
+
+
 def otsus(img, bins):
     # Get the image histogram and the bin edges(Would implement own histogram function, but it is hard to get bin edges in that case).
     histogram, edges = np.histogram(img, bins=bins)
@@ -32,4 +33,3 @@ def otsus(img, bins):
     thresh = centres[:-1][index_of_max_val]
 
     return thresh
-

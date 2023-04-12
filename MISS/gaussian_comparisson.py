@@ -4,20 +4,22 @@ import matplotlib.pyplot as plt
 
 
 def gaussian_blur(img, blurr_size):
-    kernel = np.ones((blurr_size, blurr_size), np.float32)/blurr_size**2
+    """Apply gaussian blur to image"""
+    kernel = np.ones((blurr_size, blurr_size), np.float32) / blurr_size ** 2
     dst = cv2.filter2D(img, -1, kernel)
 
     return dst
 
 
 def compare(org, new):
-    max_dist = 282670692
+    """Compare two images using pixel values"""
     org_pixel_values = org.reshape(-1, 3).astype(np.int64)
     new_pixel_values = new.reshape(-1, 3).astype(np.int64)
 
     max_value = np.amax(np.abs(org_pixel_values - new_pixel_values))
 
     diff = 0
+
     abs_diff = np.abs(org_pixel_values - new_pixel_values)
     abs_diff = 1 - np.mean(abs_diff / 255)
     """ print(abs_diff)
@@ -28,11 +30,10 @@ def compare(org, new):
     print(diff)"""
     return abs_diff
 
-def run_comp(org, new, blur_size = 3):
+
+def run_comp(org, new, blur_size=3):
     org = gaussian_blur(org, blur_size)
     bad = gaussian_blur(new, blur_size)
 
     result = compare(org, bad)
     return round(result, 3)
-
-

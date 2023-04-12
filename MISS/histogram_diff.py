@@ -43,6 +43,7 @@ def compare_histo(org, new):
 
 
 def compare_binging_hist_correlation(img1: np.ndarray, img2: np.ndarray):
+    """Compare two images using histogram correlation"""
     assert img1.shape == img2.shape, "Images must be the same shape."
 
     # Compute histograms of the two images
@@ -67,7 +68,7 @@ def compare_binging_hist_correlation(img1: np.ndarray, img2: np.ndarray):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
-    return np.round(abs(correlation/len(hist1)), 3)
+    return np.round(abs(correlation / len(hist1)), 3)
 
 
 def compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):
@@ -113,7 +114,7 @@ def compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
-    return np.round(correlation/len(hist1)**3, 3)
+    return np.round(correlation / len(hist1) ** 3, 3)
 
 
 def plot_histo(a, img: np.ndarray):
@@ -122,7 +123,6 @@ def plot_histo(a, img: np.ndarray):
     plt.xlabel("pixel value")
     plt.ylabel("number of pixels")
     plt.show()
-
 
 
 def main():
@@ -136,7 +136,6 @@ def main():
     hist_org = histo(org)
     hist_shit = histo(shit)
 
-
     plt.figure()
     plt.subplot(2, 1, 1)
     plt.plot(hist_org)
@@ -145,5 +144,7 @@ def main():
     plt.show()
 
     cv2.imhist(org)
+
+
 if __name__ == '__main__':
     main()

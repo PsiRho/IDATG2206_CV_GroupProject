@@ -4,6 +4,7 @@ from MISS.otsus import otsus
 
 
 def sobel_edge_detection_own(img):
+    """Sobel Edge Detection, own implementation"""
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
@@ -32,6 +33,7 @@ def sobel_edge_detection_own(img):
 
 
 def sobel_edge_detection(image):
+    """Sobel Edge Detection, quickest self built implementation"""
     # Define the Sobel kernels for the x and y directions
     sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
@@ -52,7 +54,7 @@ def sobel_edge_detection(image):
 
     # Convert the gradient image to a 8-bit unsigned integer
     # TODO: denne endrer score en del. Prøv å comment ut og kjør igjen.
-    #gradient = np.uint8(gradient)
+    # gradient = np.uint8(gradient)
 
     cv2.imshow("og", image)
     cv2.imshow("filtered", gradient)
@@ -69,6 +71,7 @@ def sobel_edge_detection(image):
 
 
 def sobel_edge_detection_inbuilt(img):
+    """Sobel Edge Detection, using OpenCV inbuilt function"""
     gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
@@ -90,22 +93,28 @@ def sobel_edge_detection_inbuilt(img):
 
 
 def get_score(original, copy):
+    """Get the score of the difference between two images"""
+    # Flatten the images
     o_arr = original.flatten()
     m_arr = copy.flatten()
     unlike = 0
 
+    # Compare the images
     for i in range(1, len(o_arr)):
         if o_arr[i] != m_arr[i]:
             unlike += 1
 
+    # Return the score
     return np.round(1 - unlike / ((len(o_arr) + len(m_arr)) / 2), 3)
 
 
 def get_diff(org, new):
+    """Get the difference between two images"""
     sobels_org = sobel_edge_detection(org)
     sobels_new = sobel_edge_detection(new)
     diff = get_score(sobels_org, sobels_new)
     return diff
+
 
 """
 img1 = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
@@ -114,5 +123,3 @@ og = sobel_edge_detection(img1)
 new = sobel_edge_detection(img2)  #
 print(get_score(og, new))
 """
-
-
