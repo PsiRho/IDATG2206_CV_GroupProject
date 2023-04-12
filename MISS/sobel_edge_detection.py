@@ -69,3 +69,10 @@ def get_score(original, copy):
 
     return 1 - unlike/((len(o_arr)+len(m_arr))/2)
 #get_score(original, manipulated)
+
+
+def get_diff(org, new):
+    sobels_org = sobel_edge_detection(org)
+    sobels_new = sobel_edge_detection(new)
+    diff = get_score(sobels_org, sobels_new)
+    return diff
