@@ -98,10 +98,12 @@ def plot_histo(a, img: np.ndarray):
 
 def main():
     # Read image
+    print("start")
     org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
     shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l5.bmp')
 
     print(compare_hist_correlation(org, shit))
+
     hist_org = histo(org)
     hist_shit = histo(shit)
 

@@ -20,7 +20,7 @@ def compare_img():
     correlation = []
 
     # loop through the compression types
-    for compression in range(1, 7):
+    for compression in range(6, 7):
         # loop through the pictures
         for picture in range(1, 24):
             # making sure the picture number is 2 digits
@@ -43,9 +43,13 @@ def compare_img():
 
 
 def get_diff(org, new):
+    print()
     diff1 = gc.run_comp(org, new)
+    print(f"gaussian difference = {diff1}")
     diff2 = hd.compare_hist_correlation(org, new)
+    print(f"histogram difference = {diff2}")
     diff3 = sed.get_score(org, new)
+    print(f"sobel difference = {diff3}")
     return round((diff1 + diff2 + diff3) / 3, 3)
 
 def main():
