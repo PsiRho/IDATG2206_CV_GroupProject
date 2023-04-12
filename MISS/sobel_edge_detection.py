@@ -1,11 +1,28 @@
-import cv2 as cv
+import cv2
 import numpy as np
 from PIL import Image
 from MISS.otsus import otsus
 
-def sobel_edge_detection_own(img):
 
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+def sobel_kernel(size=3):
+
+    # makes sure size is odd and greater or equal to 3
+    size = max(3, size + 1 if size % 2 == 0 else size)
+
+    # Create 1D arrays representing the x and y directions
+    x = np.arange(-(size // 2), size // 2 + 1)
+    y = np.arange(-(size // 2), size // 2 + 1)
+
+    # Compute the kernel using outer products
+    kernel_x = 2 * x / (size ** 2 - 1)
+    kernel_y = 2 * y / (size ** 2 - 1)
+    kernel = np.outer(kernel_y, np.ones_like(kernel_x)) + np.outer(np.ones_like(kernel_y), kernel_x)
+
+    return kernel
+
+
+def sobel_edge_detection_own(img):
+    gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
     I = np.zeros_like(gray)
@@ -16,14 +33,14 @@ def sobel_edge_detection_own(img):
 
     gray = np.float32(gray)
 
-    for i in range(gray.shape[0]-2):
-        for j in range(gray.shape[1]-2):
+    for i in range(gray.shape[0] - 2):
+        for j in range(gray.shape[1] - 2):
             # Gradient operations
-            Gx = np.sum(np.multiply(F1, gray[i:i+3, j:j+3]))
-            Gy = np.sum(np.multiply(F2, gray[i:i+3, j:j+3]))
+            Gx = np.sum(np.multiply(F1, gray[i:i + 3, j:j + 3]))
+            Gy = np.sum(np.multiply(F2, gray[i:i + 3, j:j + 3]))
 
             # Magnitude of vector
-            I[i+1, j+1] = np.sqrt(Gx**2 + Gy**2)
+            I[i + 1, j + 1] = np.sqrt(Gx ** 2 + Gy ** 2)
 
     thresh = otsus(I, 256)
     I[I < thresh] = 0
@@ -31,20 +48,33 @@ def sobel_edge_detection_own(img):
 
     return I
 
-def sobel_edge_detection_inbuilt(img):
 
-    gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+def sobel_edge_detection(image):
+    # Define the Sobel kernels for the x and y directions
+    sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
+
+    # Compute the gradient of the image using the Sobel kernels
+    gradient_x = np.abs(np.convolve(image, sobel_x, mode='same'))
+    gradient_y = np.abs(np.convolve(image, sobel_y, mode='same'))
+    gradient = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
+
+    return gradient
+
+
+def sobel_edge_detection_inbuilt(img):
+    gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
 
     # Preallocate the matrices with zeros
     I = np.zeros_like(gray)
 
-    grad_x = cv.Sobel(gray, cv.CV_64F, 1, 0, ksize=3)
-    grad_y = cv.Sobel(gray, cv.CV_64F, 0, 1, ksize=3)
+    grad_x = cv2.Sobel(gray, cv2.cv2_64F, 1, 0, ksize=3)
+    grad_y = cv2.Sobel(gray, cv2.cv2_64F, 0, 1, ksize=3)
 
-    abs_grad_x = cv.convertScaleAbs(grad_x)
-    abs_grad_y = cv.convertScaleAbs(grad_y)
+    abs_grad_x = cv2.convertScaleAbs(grad_x)
+    abs_grad_y = cv2.convertScaleAbs(grad_y)
 
-    I = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
+    I = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
 
     thresh = otsus(I, 256)
     I[I < thresh] = 0
@@ -62,7 +92,7 @@ def get_score(original, copy):
         if o_arr[i] != m_arr[i]:
             unlike += 1
 
-    return np.round(1 - unlike/((len(o_arr)+len(m_arr))/2), 3)
+    return np.round(1 - unlike / ((len(o_arr) + len(m_arr)) / 2), 3)
 
 
 def get_diff(org, new):
