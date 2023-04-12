@@ -84,7 +84,7 @@ def compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
-    return np.round(correlation/len(hist1), 3)
+    return np.round(correlation/len(hist1)**3, 3)
 
 
 def plot_histo(a, img: np.ndarray):
@@ -96,9 +96,20 @@ def plot_histo(a, img: np.ndarray):
 
 
 
-def compare_img(compression_type, correlation):
+def compare_img():
     """method for comparing the histogram for the two images"""
 
+    compression_type = {
+        1: "1_JPEG2000_Compression",
+        2: "2_JPEG_Compression",
+        3: "3_Poisson_Noise",
+        4: "4_Gaussian_Blur",
+        5: "5_SGCK_Gamut_Mapping",
+        6: "6_DeltaE_Gamut_Mapping",
+    }
+
+
+    correlation = []
     # loop through the compression types
     for compression in range(1, 7):
         # loop through the pictures
@@ -118,24 +129,25 @@ def compare_img(compression_type, correlation):
                 # appending the correlation to the list
                 correlation.append(diff)
                 # printing the correlation
-                #print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+                print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
 
 def main():
     # Read image
     org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-    new = cv2.imread('../CIDIQ_Dataset/Images/Original/final02.bmp')
+    shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l5.bmp')
 
-    # compression type
-    # compression = 4
-    # picture number
-    # picture = "05"
-
-    # making array for all correlation values
-    ghetto_correlation = []
-    compare_img(compression_type, ghetto_correlation)
-    print(len(ghetto_correlation))
-    print(ghetto_correlation)
+    print(compare_hist_correlation(org, shit))
+    hist_org = histo(org)
+    hist_shit = histo(shit)
 
 
+    plt.figure()
+    plt.subplot(2, 1, 1)
+    plt.plot(hist_org)
+    plt.subplot(2, 1, 2)
+    plt.plot(hist_shit)
+    plt.show()
+
+    cv2.imhist(org)
 if __name__ == '__main__':
     main()
