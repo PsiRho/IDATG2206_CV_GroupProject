@@ -2,10 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final02_d1_l1.bmp')
-
-
 
 def gaussian_blur(img, blurr_size):
     kernel = np.ones((blurr_size, blurr_size), np.float32)/blurr_size**2
@@ -22,7 +18,7 @@ def compare(org, new):
     for i in range(len(org_pixel_values)):
         diff += np.linalg.norm(org_pixel_values[i] - new_pixel_values[i])
     diff = 1 - np.round(diff / max_dist, 3)
-    print(1 - np.round(diff / max_dist, 3))
+    #print(1 - np.round(diff / max_dist, 3))
     return diff
 
 def run_comp(org, new, blur_size = 3):
@@ -32,15 +28,4 @@ def run_comp(org, new, blur_size = 3):
     result = compare(org, bad)
     return result
 
-
-org_result = gaussian_blur(org, 3)
-shit_result = gaussian_blur(shit, 3)
-compare(org_result, shit_result)
-
-#cv2.imshow("picture", org_result)
-#cv2.imshow("pic", shit_result)
-
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
