@@ -2,8 +2,8 @@ import cv2 as cv
 import numpy as np
 from MISS.otsus import otsus
 
-org = cv.imread('../CIDIQ_Dataset/Images/Original/final07.bmp')
-comp = cv.imread('../CIDIQ_Dataset/Images/Reproduction/3_Poisson_Noise/final02_d3_l1.bmp')
+org = cv.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
+comp = cv.imread('../CIDIQ_Dataset/Images/Reproduction/3_Poisson_Noise/final07_d3_l1.bmp')
 
 def sobel_edge_detection(img):
 
@@ -27,20 +27,20 @@ def sobel_edge_detection(img):
             # Magnitude of vector
             I[i+1, j+1] = np.sqrt(Gx**2 + Gy**2)
 
-    cv.imshow('Original', img)
-    cv.waitKey(0)
+    #cv.imshow('Original', img)
+    #cv.waitKey(0)
 
     #I = np.uint8(I)
-    cv.imshow('Filtered Image', I)
-    cv.waitKey(0)
+    #cv.imshow('Filtered Image', I)
+    #cv.waitKey(0)
 
     thresh = otsus(I, 256)
     I[I < thresh] = 0
-    I[I > thresh] = 255
+    I[I >= thresh] = 255
 
-    cv.imshow('Edge detected Image', I)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    #cv.imshow('Edge detected Image', I)
+    #cv.waitKey(0)
+    #cv.destroyAllWindows()
 
     return I
 
