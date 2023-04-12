@@ -10,13 +10,20 @@ def sobel_edge_detection_own(img):
     # Preallocate the matrices with zeros
     I = np.zeros_like(gray)
 
-    grad_x = cv.Sobel(gray, cv.CV_64F, 1, 0, ksize=3)
-    grad_y = cv.Sobel(gray, cv.CV_64F, 0, 1, ksize=3)
+    # Filter Masks
+    F1 = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    F2 = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
 
-    abs_grad_x = cv.convertScaleAbs(grad_x)
-    abs_grad_y = cv.convertScaleAbs(grad_y)
+    gray = np.float32(gray)
 
-    I = cv.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
+    for i in range(gray.shape[0]-2):
+        for j in range(gray.shape[1]-2):
+            # Gradient operations
+            Gx = np.sum(np.multiply(F1, gray[i:i+3, j:j+3]))
+            Gy = np.sum(np.multiply(F2, gray[i:i+3, j:j+3]))
+
+            # Magnitude of vector
+            I[i+1, j+1] = np.sqrt(Gx**2 + Gy**2)
 
     thresh = otsus(I, 256)
     I[I < thresh] = 0
