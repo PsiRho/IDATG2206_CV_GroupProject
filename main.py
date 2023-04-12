@@ -23,7 +23,7 @@ def compare_img():
     # loop through the compression types
     for compression in range(6, 7):
         # loop through the pictures
-        for picture in range(1, 24):
+        for picture in range(12, 24):
             # making sure the picture number is 2 digits
             if picture < 10:
                 picture = f"0{picture}"

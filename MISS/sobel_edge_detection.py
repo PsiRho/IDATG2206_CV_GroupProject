@@ -102,16 +102,17 @@ def get_score(original, copy):
 
 
 def get_diff(org, new):
-    sobels_org = sobel_edge_detection_inbuilt(org)
-    sobels_new = sobel_edge_detection_inbuilt(new)
+    sobels_org = sobel_edge_detection(org)
+    sobels_new = sobel_edge_detection(new)
     diff = get_score(sobels_org, sobels_new)
     return diff
 
-
+"""
 img1 = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
 img2 = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')  #
 og = sobel_edge_detection(img1)
 new = sobel_edge_detection(img2)  #
 print(get_score(og, new))
+"""
 
 
