@@ -3,9 +3,6 @@ import numpy as np
 from PIL import Image
 from MISS.otsus import otsus
 
-org = cv.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-comp = cv.imread('../CIDIQ_Dataset/Images/Reproduction/3_Poisson_Noise/final01_d3_l1.bmp')
-
 def sobel_edge_detection(img):
 
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
@@ -65,9 +62,8 @@ def get_score(original, copy):
     for i in range(1, len(o_arr)):
         if o_arr[i] != m_arr[i]:
             unlike += 1
-    print(1 - unlike/((len(o_arr)+len(m_arr))/2))
 
-    return 1 - unlike/((len(o_arr)+len(m_arr))/2)
+    return np.round(1 - unlike/((len(o_arr)+len(m_arr))/2), 3)
 #get_score(original, manipulated)
 
 

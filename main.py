@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from MISS import histogram_diff as hd
 from MISS import gaussian_comparisson as gc
+from MISS import sobel_edge_detection as sed
 
 def compare_img():
     """method for comparing the histogram for the two images"""
@@ -33,18 +34,19 @@ def compare_img():
                 # reading the image
                 new = cv2.imread(path)
                 # getting the histogram correlation
-                diff2 = get_diff(org, new)
+                diff = get_diff(org, new)
                 # appending the correlation to the list
-                correlation.append(diff2)
+                correlation.append(diff)
                 # printing the correlation
-                print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff2}')
+                print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
     print(correlation)
 
 
 def get_diff(org, new):
-    diff2 = gc.run_comp(org, new)
-    #diff1 = hd.compare_hist_correlation(org, new)
-    return diff2
+    diff1 = gc.run_comp(org, new)
+    diff2 = hd.compare_hist_correlation(org, new)
+    diff3 = sed.get_score(org, new)
+    return round((diff1 + diff2 + diff3) / 3, 3)
 
 def main():
   compare_img()
