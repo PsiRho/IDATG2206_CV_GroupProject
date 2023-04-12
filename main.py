@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from MISS import histogram_diff as hd
-#from MISS import gaussian_comparisson as gc
+from MISS import gaussian_comparisson as gc
 
 def compare_img():
     """method for comparing the histogram for the two images"""
@@ -33,13 +33,18 @@ def compare_img():
                 # reading the image
                 new = cv2.imread(path)
                 # getting the histogram correlation
-                diff = hd.compare_hist_correlation(org, new)
+                diff1, diff2 = get_diff(org, new)
                 # appending the correlation to the list
-                correlation.append(diff)
+                correlation.append(diff2)
                 # printing the correlation
-                print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff}')
+                print(f'final{picture}_d{compression}_l{i + 1}.bmp : {diff2}')
     print(correlation)
 
+
+def get_diff(org, new):
+    diff1 = hd.compare_hist_correlation(org, new)
+    diff2 = gc.compare_gaussian(org, new)
+    return diff1, diff2
 
 def main():
   compare_img()
