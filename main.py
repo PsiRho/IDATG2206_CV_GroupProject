@@ -5,6 +5,7 @@ from MISS import histogram_diff as hd
 from MISS import gaussian_comparisson as gc
 from MISS import sobel_edge_detection as sed
 
+
 def compare_img():
     """method for comparing the histogram for the two images"""
 
@@ -52,8 +53,10 @@ def get_diff(org, new):
     print(f"sobel difference = {diff3}")
     return round((diff1 + diff2 + diff3) / 3, 3)
 
+
 def main():
-  compare_img()
+    compare_img()
+
 
 if __name__ == '__main__':
     main()
