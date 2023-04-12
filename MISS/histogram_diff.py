@@ -44,4 +44,10 @@ def compare_hist_correlation(img1, img2):
     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
 
+    # TODO: Check if this is faster.
+    # correlation = np.corrcoef(hist1_norm.flatten(), hist2_norm.flatten())[0, 1]
+
     return correlation
+
+
+
