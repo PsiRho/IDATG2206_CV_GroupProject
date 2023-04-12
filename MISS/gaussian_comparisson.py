@@ -14,18 +14,25 @@ def compare(org, new):
     max_dist = 282670692
     org_pixel_values = org.reshape(-1, 3).astype(np.int64)
     new_pixel_values = new.reshape(-1, 3).astype(np.int64)
+
+    max_value = np.amax(np.abs(org_pixel_values - new_pixel_values))
+
     diff = 0
+    abs_diff = np.abs(org_pixel_values - new_pixel_values)
+    abs_diff = 1 - np.mean(abs_diff / 255)
+    """ print(abs_diff)
     for i in range(len(org_pixel_values)):
         diff += np.linalg.norm(org_pixel_values[i] - new_pixel_values[i])
     diff = 1 - np.round(diff / max_dist, 3)
     #print(1 - np.round(diff / max_dist, 3))
-    return diff
+    print(diff)"""
+    return abs_diff
 
 def run_comp(org, new, blur_size = 3):
     org = gaussian_blur(org, blur_size)
     bad = gaussian_blur(new, blur_size)
 
     result = compare(org, bad)
-    return result
+    return round(result, 3)
 
 
