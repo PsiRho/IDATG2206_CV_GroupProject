@@ -42,6 +42,34 @@ def compare_histo(org, new):
     return 1 - (diff / (max_value * 2))
 
 
+def compare_binging_hist_correlation(img1: np.ndarray, img2: np.ndarray):
+    assert img1.shape == img2.shape, "Images must be the same shape."
+
+    # Compute histograms of the two images
+    if len(img1.shape) == 3:
+        hist1_r, _ = np.histogram(img1[:, :, 0], bins=256, range=[0, 256])
+        hist1_g, _ = np.histogram(img1[:, :, 1], bins=256, range=[0, 256])
+        hist1_b, _ = np.histogram(img1[:, :, 2], bins=256, range=[0, 256])
+        hist2_r, _ = np.histogram(img2[:, :, 0], bins=256, range=[0, 256])
+        hist2_g, _ = np.histogram(img2[:, :, 1], bins=256, range=[0, 256])
+        hist2_b, _ = np.histogram(img2[:, :, 2], bins=256, range=[0, 256])
+        hist1 = np.concatenate((hist1_r, hist1_g, hist1_b))
+        hist2 = np.concatenate((hist2_r, hist2_g, hist2_b))
+    else:
+        hist1, _ = np.histogram(img1, bins=256, range=[0, 256])
+        hist2, _ = np.histogram(img2, bins=256, range=[0, 256])
+
+    # Normalize histograms
+    hist1_norm = hist1 / img1.size
+    hist2_norm = hist2 / img2.size
+
+    # Compute correlation between the histograms
+    correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))
+    correlation /= (np.std(hist1_norm) * np.std(hist2_norm))
+
+    return np.round(abs(correlation/len(hist1)), 3)
+
+
 def compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):
     """
     Compute correlation between two histograms. If the image is grayscale, the np.histogram() function will be used.
