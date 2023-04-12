@@ -50,14 +50,30 @@ def sobel_edge_detection_own(img):
 
 
 def sobel_edge_detection(image):
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # Define the Sobel kernels for the x and y directions
     sobel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     sobel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
 
     # Compute the gradient of the image using the Sobel kernels
-    gradient_x = np.abs(np.convolve(image, sobel_x, mode='same'))
-    gradient_y = np.abs(np.convolve(image, sobel_y, mode='same'))
+    gradient_x = np.abs(np.convolve(gray, sobel_x, mode='same'))
+    gradient_y = np.abs(np.convolve(gray, sobel_y, mode='same'))
     gradient = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
+
+    gray = np.uint8(gray)
+    cv2.imshow("og", image)
+    cv2.waitKey(0)
+    cv2.imshow("filtered", gradient)
+    cv2.waitKey(0)
+
+    thresh = otsus(gradient, 256)
+    gradient[gradient < thresh] = 0
+    gradient[gradient >= thresh] = 255
+
+    cv2.imshow("edges", gradient)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     return gradient
 
@@ -100,3 +116,13 @@ def get_diff(org, new):
     sobels_new = sobel_edge_detection_inbuilt(new)
     diff = get_score(sobels_org, sobels_new)
     return diff
+
+img1 = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
+img2 = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')
+
+og = sobel_edge_detection(img1)
+new = sobel_edge_detection(img2)
+
+get_score(og, new)
+
+
