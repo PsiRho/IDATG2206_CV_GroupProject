@@ -3,10 +3,6 @@ import numpy as np
 from PIL import Image
 from MISS.otsus import otsus
 
-def sobel_edge_detection(img):
-org = cv.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-comp = cv.imread('../CIDIQ_Dataset/Images/Reproduction/3_Poisson_Noise/final01_d3_l1.bmp')
-
 def sobel_edge_detection_own(img):
 
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
