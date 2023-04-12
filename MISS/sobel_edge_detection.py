@@ -1,24 +1,6 @@
 import cv2
 import numpy as np
-from PIL import Image
 from MISS.otsus import otsus
-
-
-def sobel_kernel(size=3):
-
-    # makes sure size is odd and greater or equal to 3
-    size = max(3, size + 1 if size % 2 == 0 else size)
-
-    # Create 1D arrays representing the x and y directions
-    x = np.arange(-(size // 2), size // 2 + 1)
-    y = np.arange(-(size // 2), size // 2 + 1)
-
-    # Compute the kernel using outer products
-    kernel_x = 2 * x / (size ** 2 - 1)
-    kernel_y = 2 * y / (size ** 2 - 1)
-    kernel = np.outer(kernel_y, np.ones_like(kernel_x)) + np.outer(np.ones_like(kernel_y), kernel_x)
-
-    return kernel
 
 
 def sobel_edge_detection_own(img):
