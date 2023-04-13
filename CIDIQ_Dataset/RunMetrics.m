@@ -85,29 +85,29 @@ for i =3:length(dirDistortion) %going through the different distortions
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             end %end if   
             
-            a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
-            if a==1 %If a ==1 then run the metric
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-            %%%Add your metric here%%%  
-                % import python module
-                %py.importlib.import_module('main')
-
-                % Convert array
-                %IO = rgb2gray(IO);
-                %IR = rgb2gray(IR);
-
-                %IO_np = py.numpy.array(IO);
-                %IR_np = py.numpy.array(IR);
-                
-                %[outputvalue] = py.main.get_diff(IO_np, IR_np);
-                %Results.py(counter)=outputvalue;
-                %clear outputvalue
-
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            a=1;
+            if a==1
+             
                 [outputvalue] = OURMET(IO, IR);
                 Results.OURMET(counter) = outputvalue;
                 clear outputvalue
             
-            end %end if   
+            end
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            a=0;
+            if a==1
+                    IO_gray = rgb2gray(IO);
+                    IR_gray = rgb2gray(IR);
+
+                    % Calculate the SSIM score
+                    [outputvalue] = SSIM(IO_gray, IR_gray);
+                    Results.SSIM(counter) = outputvalue;
+                    clear outputvalue
+            end 
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             save(SaveName, 'Results','d'); %storing results after each image
     
