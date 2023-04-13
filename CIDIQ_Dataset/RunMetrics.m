@@ -17,14 +17,13 @@
 %If you want to add your own metric see example on line 62. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [] = RunMetrics1(d)
+function [] = RunMetrics(d)
 
 warning off
 
 addpath('Metrics\'); %adding path to the metrics
-dirDistortion = dir('Images\Reproduction\'); %directory to the reproductions
+dirDistortion = dir('CIDIQ_Dataset\Images\Reproduction\'); %directory to the reproductions
 countDistortion = 0; %initializating counter
-
 
 %%%Parameters linked with the experiment%%%
 if nargin < 1 %if no viewing distance is specified set it to 50 cm
@@ -46,11 +45,11 @@ SPD = visualAngle(-1, distance, dpi, 1); %pixels per degree
 counter = 0; %initializing counter
 mwb = MultiWaitBar(2, 1, 'Calculating image quality...', 'c'); %Initializing waitbar
 
-for i =1:length(dirDistortion) %going through the different distortions
+for i =3:length(dirDistortion) %going through the different distortions
     if(isdir(dirDistortion(i).name) == 0) %If a folder continue
         countDistortion = countDistortion +1; %updating counter
         mwb.Update(1, 1, countDistortion/6,'Distortion...');%updating waitbar
-        dirReproduction = dir(['Images\Reproduction\', dirDistortion(i).name, '\*.bmp']); %directory to the reproductions, search for BMPs
+        dirReproduction = dir(['CIDIQ_Dataset\Images\Reproduction\', dirDistortion(i).name, '\*.bmp']); %directory to the reproductions, search for BMPs
         disp(['Calculating distortion #', strrep(dirDistortion(i).name,'_' , ' '),'...']);
         for j=1:length(dirReproduction)
             counter = counter +1; %Counter to keep track of the results, updating. 
@@ -77,7 +76,7 @@ for i =1:length(dirDistortion) %going through the different distortions
 %             end %end if    
             
             a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
-            if a==0 %If a ==1 then run the metric
+            if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%PSNR%%%  
                 [outputvalue] = PSNR(rgb2gray(IO),rgb2gray(IR)); %running PSNR metric. using RGB2gray to convert to a grayscale image. 
@@ -86,21 +85,21 @@ for i =1:length(dirDistortion) %going through the different distortions
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             end %end if   
             
-            a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
+            a=0; %If a is set to 1 then run the metric, if set to 0, do not run it
             if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%Add your metric here%%%  
                 % import python module
-                py.importlib.import_module('Histogram_diff')
+                py.importlib.import_module('MISS\Histogram_diff')
 
                 % Convert array
-                IO = rgb2gray(IO)
-                IR = rgb2gray(IR)
+                IO = rgb2gray(IO);
+                IR = rgb2gray(IR);
 
-                IO_np = py.numpy.array(IO)
-                IR_np = py.numpy.array(IR)
+                IO_np = py.numpy.array(IO);
+                IR_np = py.numpy.array(IR);
 
-                [outputvalue] = py.Histogram_diff.compare_hist_correlation(IO_np, IR_np);
+                [outputvalue] = py.MISS.Histogram_diff.compare_hist_correlation(IO_np, IR_np);
                 Results.py(counter)=outputvalue;
                 clear outputvalue
             
