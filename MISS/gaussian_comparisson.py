@@ -3,7 +3,7 @@ import numpy as np
 
 
 def mean_blur(img, blurr_size):
-    """Apply gaussian blur to image"""
+    """Apply mean blur to image"""
     kernel = np.ones((blurr_size, blurr_size), np.float32) / blurr_size ** 2
     dst = cv2.filter2D(img, -1, kernel)
 
@@ -14,7 +14,7 @@ def compare(org, new):
     """Compare two images using pixel values"""
     org_pixel_values = org.reshape(-1, 3).astype(np.int32)
     new_pixel_values = new.reshape(-1, 3).astype(np.int32)
-#
+
     abs_diff = np.abs(org_pixel_values - new_pixel_values)
     abs_diff = 1 - np.mean(abs_diff / 255)
 
@@ -36,9 +36,5 @@ def run_comp(org, new, blur_size=3):
     bad = mean_blur(new, blur_size)
 
     result = compare(org, bad)
-    return round(result, 3)
+    return round(result, 4)
 
-
-
-
-compare(cv2.imread("C:\\Users\\johan\\Desktop\\MISS\\images\\test\\test1.jpg"), cv2.imread("C:\\Users\\johan\\Desktop\\MISS\\images\\test\\test2.jpg"))
