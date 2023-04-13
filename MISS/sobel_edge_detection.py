@@ -56,17 +56,6 @@ def sobel_edge_detection(image):
     # TODO: denne endrer score en del. Prøv å comment ut og kjør igjen.
     # gradient = np.uint8(gradient)
 
-    cv2.imshow("og", image)
-    cv2.imshow("filtered", gradient)
-
-    thresh = otsus(gradient, 256)
-    gradient[gradient < thresh] = 0
-    gradient[gradient >= thresh] = 255
-
-    cv2.imshow("edges", gradient)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
     return gradient
 
 
