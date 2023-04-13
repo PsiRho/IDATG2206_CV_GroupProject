@@ -6,9 +6,10 @@ from MISS import histogram_diff as hd
 from MISS import gaussian_comparisson as gc
 from MISS import sobel_edge_detection as sed
 from MISS import absolute_img_diff as absdiff
+from MISS import comp_fft
 
 
-#def compare_img():
+# def compare_img():
 #    """method for comparing the histogram for the two images"""
 #
 #    # dictionary for the compression types
@@ -47,12 +48,12 @@ from MISS import absolute_img_diff as absdiff
 #    print(correlation)
 
 
-def get_diff(org, new):
+def get_diff2(org, new):
     """method for getting the difference between the two images"""
-    print("--------------------")
+    print("-------------------------------------------------------")
 
     diff1 = gc.run_comp(org, new)
-    print(f"gaussian difference = {diff1}")
+    print(f"mean blur difference = {diff1}")
 
     diff2 = hd.compare_binging_hist_correlation(org, new)
     print(f"histogram difference = {diff2}")
@@ -63,14 +64,18 @@ def get_diff(org, new):
     diff4 = absdiff.absolute_img_diff(org, new)
     print(f"absolute difference = {diff4}")
 
-def get_threaded_diff(org, new):
-    """method for getting the difference between the two images"""
-    print()
+    return round((diff1 + diff2 + diff3 + diff4) / 4, 4)
 
-    # Definer funksjonene som skal kjøre på separate tråder
-    def run_gaussian():
+
+def get_diff(org, new):
+    """method for getting the difference between the two images"""
+
+    results = {}
+
+    # Define functions to run on separate threads
+    def run_mean_blur():
         diff1 = gc.run_comp(org, new)
-        print(f"gaussian difference = {diff1}")
+        print(f"mean blur difference = {diff1}")
         results['diff1'] = diff1
 
     def run_histogram():
@@ -78,22 +83,54 @@ def get_threaded_diff(org, new):
         print(f"histogram difference = {diff2}")
         results['diff2'] = diff2
 
-    # Opprett og start to separate tråder for de to første funksjonene
-    results = {}
+    def run_sobel_diff():
+        diff3 = sed.get_score(org, new)
+        print(f"sobel difference = {diff3}")
+        results['diff3'] = diff3
+
+    def run_absolute_diff():
+        diff4 = absdiff.absolute_img_diff(org, new)
+        print(f"absolute difference = {diff4}")
+        results['diff4'] = diff4
+
+    def run_fft():
+        diff5 = comp_fft.compare_fft(org, new)
+        print(f"fft difference = {diff5}")
+        results['diff5'] = diff5
+
+    # Run the functions on separate threads
     threads = [
-        threading.Thread(target=run_gaussian),
-        threading.Thread(target=run_histogram)
+        threading.Thread(target=run_mean_blur),
+        threading.Thread(target=run_histogram),
+        threading.Thread(target=run_sobel_diff),
+        threading.Thread(target=run_absolute_diff),
+        threading.Thread(target=run_fft)
     ]
     for thread in threads:
         thread.start()
 
-    # Kjør den siste funksjonen på hovedtråden og vent på de to andre trådene
-    diff3 = sed.get_score(org, new)
-    print(f"sobel difference = {diff3}")
-
     for thread in threads:
         thread.join()
 
-    # Kombiner resultatene og returner gjennomsnittet
-    avg_diff = (results['diff1'] + results['diff2'] + diff3) / 3
+    # Calculate the average difference
+    meanblurdiff = results['diff1']
+    histdiff = results['diff2']
+    sobeldiff = results['diff3']
+    absolutediff = results['diff4']
+    fftdiff = results['diff5']
+
+    meanblurdiff_weight = 0.2
+    histdiff_weight = 0.5
+    sobeldiff_weight = 0.5
+    absdiff_weight = 0.5
+    fftdiff_weight = 1
+
+    weighted_sum = (meanblurdiff * meanblurdiff_weight) + \
+                   (histdiff * histdiff_weight) + \
+                   (sobeldiff * sobeldiff_weight) + \
+                   (absolutediff * absdiff_weight) + \
+                   (fftdiff * fftdiff_weight)
+
+    avg_diff = weighted_sum / 5
+
     return round(avg_diff, 3)
