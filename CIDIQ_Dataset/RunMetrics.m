@@ -75,7 +75,7 @@ for i =3:length(dirDistortion) %going through the different distortions
 %             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %             end %end if    
             
-            a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
+            a=0; %If a is set to 1 then run the metric, if set to 0, do not run it
             if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%PSNR%%%  
@@ -85,8 +85,8 @@ for i =3:length(dirDistortion) %going through the different distortions
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             end %end if   
             
-            b=1; %If a is set to 1 then run the metric, if set to 0, do not run it
-            if b==1 %If a ==1 then run the metric
+            a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
+            if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%Add your metric here%%%  
                 % import python module
@@ -98,9 +98,10 @@ for i =3:length(dirDistortion) %going through the different distortions
 
                 %IO_np = py.numpy.array(IO);
                 %IR_np = py.numpy.array(IR);
-
+                
                 %[outputvalue] = py.main.get_diff(IO_np, IR_np);
                 %Results.py(counter)=outputvalue;
+                %clear outputvalue
 
                 [outputvalue] = OURMET(IO, IR);
                 Results.OURMET(counter) = outputvalue;
