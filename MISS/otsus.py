@@ -1,6 +1,7 @@
 import numpy as np
 
 
+
 def otsus(img, bins):
     """
     A function for finding the ideal threshold of an image using otsu's algorithm

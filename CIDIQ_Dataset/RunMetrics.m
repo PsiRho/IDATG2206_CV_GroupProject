@@ -22,9 +22,8 @@ function [] = RunMetrics(d)
 warning off
 
 addpath('Metrics\'); %adding path to the metrics
-dirDistortion = dir('Images\Reproduction\'); %directory to the reproductions
+dirDistortion = dir('CIDIQ_Dataset\Images\Reproduction\'); %directory to the reproductions
 countDistortion = 0; %initializating counter
-
 
 %%%Parameters linked with the experiment%%%
 if nargin < 1 %if no viewing distance is specified set it to 50 cm
@@ -46,11 +45,11 @@ SPD = visualAngle(-1, distance, dpi, 1); %pixels per degree
 counter = 0; %initializing counter
 mwb = MultiWaitBar(2, 1, 'Calculating image quality...', 'c'); %Initializing waitbar
 
-for i =1:length(dirDistortion) %going through the different distortions
+for i =3:length(dirDistortion) %going through the different distortions
     if(isdir(dirDistortion(i).name) == 0) %If a folder continue
         countDistortion = countDistortion +1; %updating counter
         mwb.Update(1, 1, countDistortion/6,'Distortion...');%updating waitbar
-        dirReproduction = dir(['Images\Reproduction\', dirDistortion(i).name, '\*.bmp']); %directory to the reproductions, search for BMPs
+        dirReproduction = dir(['CIDIQ_Dataset\Images\Reproduction\', dirDistortion(i).name, '\*.bmp']); %directory to the reproductions, search for BMPs
         disp(['Calculating distortion #', strrep(dirDistortion(i).name,'_' , ' '),'...']);
         for j=1:length(dirReproduction)
             counter = counter +1; %Counter to keep track of the results, updating. 
