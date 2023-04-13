@@ -1,0 +1,122 @@
+[1mdiff --git a/MISS/Histogram_diff.py b/MISS/Histogram_diff.py[m
+[1mindex 94a9114..7446b0e 100644[m
+[1m--- a/MISS/Histogram_diff.py[m
+[1m+++ b/MISS/Histogram_diff.py[m
+[36m@@ -1,7 +1,77 @@[m
+[32m+[m[32mimport matplotlib.pyplot as plt[m
+ import numpy as np[m
+[32m+[m[32mimport cv2[m
+ [m
+ [m
+[31m-def compare_hist_correlation(img1, img2):[m
+[32m+[m[32m# make image grayscale[m
+[32m+[m[32m# org = cv2.cvtColor(org, cv2.COLOR_BGR2GRAY)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef histo(img: np.ndarray, bins: int = 256):[m
+[32m+[m[32m    """Compute histogram out of pixel values"""[m
+[32m+[m
+[32m+[m[32m    pix_values = np.zeros(bins, int)[m
+[32m+[m
+[32m+[m[32m    for y in range(img.shape[0]):[m
+[32m+[m[32m        for x in range(img.shape[1]):[m
+[32m+[m[32m            pix_values[img[y, x]] += 1[m
+[32m+[m
+[32m+[m[32m    return pix_values[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef compare_histo(org, new):[m
+[32m+[m[32m    """method for comparing the difference between two histograms"""[m
+[32m+[m[32m    # TODO: remove function[m
+[32m+[m
+[32m+[m[32m    diff = 0[m
+[32m+[m[32m    org_value = 0[m
+[32m+[m[32m    new_value = 0[m
+[32m+[m[32m    max_value = 0[m
+[32m+[m[32m    # loop through the histograms[m
+[32m+[m[32m    for i in range(len(org)):[m
+[32m+[m[32m        # Add up the total for both histograms[m
+[32m+[m[32m        org_value += org[i][m
+[32m+[m[32m        new_value += new[i][m
+[32m+[m[32m        # get the absolute value for the difference between the histograms[m
+[32m+[m[32m        diff += abs(org[i] - new[i])[m
+[32m+[m[32m        # set the highest values to be the max values[m
+[32m+[m[32m        max_value = new_value if new_value > org_value else org_value[m
+[32m+[m
+[32m+[m[32m    # return the difference between the two histograms divided by the twice the max value[m
+[32m+[m[32m    # to get a value between 0 and 1, which is the percentage of difference[m
+[32m+[m[32m    return 1 - (diff / (max_value * 2))[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef compare_binging_hist_correlation(img1: np.ndarray, img2: np.ndarray):[m
+[32m+[m[32m    """Compare two images using histogram correlation"""[m
+[32m+[m[32m    assert img1.shape == img2.shape, "Images must be the same shape."[m
+[32m+[m
+[32m+[m[32m    # Compute histograms of the two images[m
+[32m+[m[32m    if len(img1.shape) == 3:[m
+[32m+[m[32m        hist1_r, _ = np.histogram(img1[:, :, 0], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist1_g, _ = np.histogram(img1[:, :, 1], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist1_b, _ = np.histogram(img1[:, :, 2], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist2_r, _ = np.histogram(img2[:, :, 0], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist2_g, _ = np.histogram(img2[:, :, 1], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist2_b, _ = np.histogram(img2[:, :, 2], bins=256, range=[0, 256])[m
+[32m+[m[32m        hist1 = np.concatenate((hist1_r, hist1_g, hist1_b))[m
+[32m+[m[32m        hist2 = np.concatenate((hist2_r, hist2_g, hist2_b))[m
+[32m+[m[32m    else:[m
+[32m+[m[32m        hist1, _ = np.histogram(img1, bins=256, range=[0, 256])[m
+[32m+[m[32m        hist2, _ = np.histogram(img2, bins=256, range=[0, 256])[m
+[32m+[m
+[32m+[m[32m    # Normalize histograms[m
+[32m+[m[32m    hist1_norm = hist1 / img1.size[m
+[32m+[m[32m    hist2_norm = hist2 / img2.size[m
+[32m+[m
+[32m+[m[32m    # Compute correlation between the histograms[m
+[32m+[m[32m    correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))[m
+[32m+[m[32m    correlation /= (np.std(hist1_norm) * np.std(hist2_norm))[m
+[32m+[m
+[32m+[m[32m    return np.round(abs(correlation / len(hist1)), 3)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef compare_hist_correlation(img1: np.ndarray, img2: np.ndarray):[m
+     """[m
+     Compute correlation between two histograms. If the image is grayscale, the np.histogram() function will be used.[m
+     If the image is color, the np.histogramdd() function will be used. The histograms will have 256 bins.[m
+[36m@@ -44,4 +114,37 @@[m [mdef compare_hist_correlation(img1, img2):[m
+     correlation = np.sum((hist1_norm - np.mean(hist1_norm)) * (hist2_norm - np.mean(hist2_norm)))[m
+     correlation /= (np.std(hist1_norm) * np.std(hist2_norm))[m
+ [m
+[31m-    return correlation[m
+[32m+[m[32m    return np.round(correlation / len(hist1) ** 3, 3)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef plot_histo(a, img: np.ndarray):[m
+[32m+[m[32m    """Plot histogram out of vector"""[m
+[32m+[m[32m    plt.plot(a)[m
+[32m+[m[32m    plt.xlabel("pixel value")[m
+[32m+[m[32m    plt.ylabel("number of pixels")[m
+[32m+[m[32m    plt.show()[m
+[32m+[m
+[32m+[m
+[32m+[m[32mdef main():[m
+[32m+[m[32m    # Read image[m
+[32m+[m[32m    print("start")[m
+[32m+[m[32m    org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')[m
+[32m+[m[32m    shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l5.bmp')[m
+[32m+[m
+[32m+[m[32m    print(compare_hist_correlation(org, shit))[m
+[32m+[m
+[32m+[m[32m    hist_org = histo(org)[m
+[32m+[m[32m    hist_shit = histo(shit)[m
+[32m+[m
+[32m+[m[32m    plt.figure()[m
+[32m+[m[32m    plt.subplot(2, 1, 1)[m
+[32m+[m[32m    plt.plot(hist_org)[m
+[32m+[m[32m    plt.subplot(2, 1, 2)[m
+[32m+[m[32m    plt.plot(hist_shit)[m
+[32m+[m[32m    plt.show()[m
+[32m+[m
+[32m+[m[32m    cv2.imhist(org)[m
+[32m+[m
+[32m+[m
+[32m+[m[32mif __name__ == '__main__':[m
+[32m+[m[32m    main()[m

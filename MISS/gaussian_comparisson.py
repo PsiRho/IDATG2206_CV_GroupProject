@@ -37,3 +37,7 @@ def run_comp(org, new, blur_size=3):
 
     result = compare(org, bad)
     return round(result, 3)
+
+
+
+compare(cv2.imread("C:\\Users\\johan\\Desktop\\MISS\\images\\test\\test1.jpg"), cv2.imread("C:\\Users\\johan\\Desktop\\MISS\\images\\test\\test2.jpg"))

@@ -1,4 +1,5 @@
 import cv2
+import threading
 import numpy as np
 import matplotlib.pyplot as plt
 from MISS import histogram_diff as hd
@@ -55,6 +56,43 @@ def get_diff(org, new):
     diff3 = sed.get_score(org, new)
     print(f"sobel difference = {diff3}")
     return round((diff1 + diff2 + diff3) / 3, 3)
+
+
+
+def get_threaded_diff(org, new):
+    """method for getting the difference between the two images"""
+    print()
+
+    # Definer funksjonene som skal kjøre på separate tråder
+    def run_gaussian():
+        diff1 = gc.run_comp(org, new)
+        print(f"gaussian difference = {diff1}")
+        results['diff1'] = diff1
+
+    def run_histogram():
+        diff2 = hd.compare_binging_hist_correlation(org, new)
+        print(f"histogram difference = {diff2}")
+        results['diff2'] = diff2
+
+    # Opprett og start to separate tråder for de to første funksjonene
+    results = {}
+    threads = [
+        threading.Thread(target=run_gaussian),
+        threading.Thread(target=run_histogram)
+    ]
+    for thread in threads:
+        thread.start()
+
+    # Kjør den siste funksjonen på hovedtråden og vent på de to andre trådene
+    diff3 = sed.get_score(org, new)
+    print(f"sobel difference = {diff3}")
+
+    for thread in threads:
+        thread.join()
+
+    # Kombiner resultatene og returner gjennomsnittet
+    avg_diff = (results['diff1'] + results['diff2'] + diff3) / 3
+    return round(avg_diff, 3)
 
 
 def main():
