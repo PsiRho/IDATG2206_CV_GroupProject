@@ -51,9 +51,13 @@ if iscell(c)
         ydata(:,i) = mean(tempYData(2:3,:))';
     end
 else
+    %xdata = mean(get(c,'xdata'));
+    %tempYData  = get(c,'ydata');
+    %ydata = mean(tempYData(2:3,:))';
+    
     xdata = mean(get(c,'xdata'));
-    tempYData  = get(c,'ydata');
-    ydata = mean(tempYData(2:3,:))';
+    tempYData  = get(b,'ydata');
+    ydata = mean(tempYData(1,:))';
 end
 
 %% plot the errorbars
