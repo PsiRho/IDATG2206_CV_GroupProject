@@ -75,7 +75,7 @@ for i =3:length(dirDistortion) %going through the different distortions
 %             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %             end %end if    
             
-            a=0; %If a is set to 1 then run the metric, if set to 0, do not run it
+            a=1; %If a is set to 1 then run the metric, if set to 0, do not run it
             if a==1 %If a ==1 then run the metric
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
             %%%PSNR%%%  
@@ -96,15 +96,15 @@ for i =3:length(dirDistortion) %going through the different distortions
             end
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            a=0;
+            a=1;
             if a==1
-                    IO_gray = rgb2gray(IO);
-                    IR_gray = rgb2gray(IR);
+                IO_gray = rgb2gray(IO);
+                IR_gray = rgb2gray(IR);
 
-                    % Calculate the SSIM score
-                    [outputvalue] = SSIM(IO_gray, IR_gray);
-                    Results.SSIM(counter) = outputvalue;
-                    clear outputvalue
+                % Calculate the SSIM score
+                [outputvalue] = SSIM(IO_gray, IR_gray);
+                Results.SSIM(counter) = outputvalue;
+                clear outputvalue
             end 
 
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
