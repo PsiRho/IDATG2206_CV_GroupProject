@@ -6,7 +6,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 from MISS import histogram_diff as histdiff
-from MISS import gaussian_comparisson as meanblur
+from MISS import mean_blur_comparisson as meanblur
 from MISS import sobel_edge_detection as sobel
 from MISS import absolute_img_diff as absdiff
 from MISS import comp_fft
@@ -51,94 +51,6 @@ from MISS import comp_fft
 #    print(correlation)
 
 
-def get_diff2(org, new):
-    """method for getting the difference between the two images"""
-    print("-------------------------------------------------------")
-
-    diff1 = meanblur.run_comp(org, new)
-    print(f"mean blur difference = {diff1}")
-
-    diff2 = histdiff.compare_binging_hist_correlation(org, new)
-    print(f"histogram difference = {diff2}")
-
-    diff3 = sobel.get_score(org, new)
-    print(f"sobel difference = {diff3}")
-
-    diff4 = absdiff.absolute_img_diff(org, new)
-    print(f"absolute difference = {diff4}")
-
-    return round((diff1 + diff2 + diff3 + diff4) / 4, 4)
-
-
-def get_diff2(org, new):
-    """method for getting the difference between the two images"""
-
-    results = {}
-
-    # Define functions to run on separate threads
-    def run_mean_blur():
-        diff1 = meanblur.run_comp(org, new)
-        print(f"mean blur difference = {diff1}")
-        results['diff1'] = diff1
-
-    def run_histogram():
-        diff2 = histdiff.compare_binging_hist_correlation(org, new)
-        print(f"histogram difference = {diff2}")
-        results['diff2'] = diff2
-
-    def run_sobel_diff():
-        diff3 = sobel.get_score(org, new)
-        print(f"sobel difference = {diff3}")
-        results['diff3'] = diff3
-
-    def run_absolute_diff():
-        diff4 = absdiff.absolute_img_diff(org, new)
-        print(f"absolute difference = {diff4}")
-        results['diff4'] = diff4
-
-    def run_fft():
-        diff5 = comp_fft.compare_fft(org, new)
-        print(f"fft difference = {diff5}")
-        results['diff5'] = diff5
-
-    # Run the functions on separate threads
-    threads = [
-        threading.Thread(target=run_mean_blur),
-        threading.Thread(target=run_histogram),
-        threading.Thread(target=run_sobel_diff),
-        threading.Thread(target=run_absolute_diff),
-        threading.Thread(target=run_fft)
-    ]
-    for thread in threads:
-        thread.start()
-
-    for thread in threads:
-        thread.join()
-
-    # Calculate the average difference
-    meanblurdiff = results['diff1']
-    histdiff = results['diff2']
-    sobeldiff = results['diff3']
-    absolutediff = results['diff4']
-    fftdiff = results['diff5']
-
-    meanblurdiff_weight = 0.2
-    histdiff_weight = 0.5
-    sobeldiff_weight = 0.5
-    absdiff_weight = 0.7
-    fftdiff_weight = 0.2
-
-    weighted_sum = (meanblurdiff * meanblurdiff_weight) + \
-                   (histdiff * histdiff_weight) + \
-                   (sobeldiff * sobeldiff_weight) + \
-                   (absolutediff * absdiff_weight) + \
-                   (fftdiff * fftdiff_weight)
-
-    avg_diff = weighted_sum / 5
-
-    return round(avg_diff, 3)
-
-
 def run_mean_blur(org, new, queue):
     diff1 = meanblur.run_comp(org, new)
     print(f"mean blur difference = {diff1}")
@@ -175,22 +87,37 @@ def calculate_weighted_average(results, weights):
     return round(avg_diff, 3)
 
 
+def calculate_weights(results):
+    # define the minimum and maximum result values
+    min_result = min(results.values())
+    max_result = max(results.values())
+
+    # map the result values to the weight scale
+    hist_weight = (results['diff2'] - min_result) / (max_result - min_result)
+    sobel_weight = (results['diff3'] - min_result) / (max_result - min_result)
+    abs_weight = (results['diff4'] - min_result) / (max_result - min_result)
+
+    # return the weights
+    return [hist_weight, sobel_weight, abs_weight]
+
+
 def get_diff(org, reprod):
     queue = Queue()
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        executor.submit(run_mean_blur, org, reprod, queue)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        # executor.submit(run_mean_blur, org, reprod, queue)
         executor.submit(run_histogram, org, reprod, queue)
         executor.submit(run_sobel_diff, org, reprod, queue)
         executor.submit(run_absolute_diff, org, reprod, queue)
-        executor.submit(run_fft, org, reprod, queue)
+        # executor.submit(run_fft, org, reprod, queue)
 
     results = {}
     while not queue.empty():
         key, value = queue.get()
         results[key] = value
 
-    weights = [0.2, 0.5, 0.5, 0.7, 0.2]
-    results_list = [results['diff1'], results['diff2'], results['diff3'], results['diff4'], results['diff5']]
+    weights = calculate_weights(results)
+    # results_list = [results['diff1'], results['diff2'], results['diff3'], results['diff4'], results['diff5']]
+    results_list = [results['diff2'], results['diff3'], results['diff4']]
     weighted_average = calculate_weighted_average(results_list, weights)
     print(f"Weighted Average Difference: {weighted_average}")
     return weighted_average
