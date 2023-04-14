@@ -2,9 +2,12 @@ import cv2
 import threading
 import numpy as np
 import matplotlib.pyplot as plt
-from MISS import histogram_diff as hd
-from MISS import gaussian_comparisson as gc
-from MISS import sobel_edge_detection as sed
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from queue import Queue
+from MISS import histogram_diff as histdiff
+from MISS import gaussian_comparisson as meanblur
+from MISS import sobel_edge_detection as sobel
 from MISS import absolute_img_diff as absdiff
 from MISS import comp_fft
 
@@ -52,13 +55,13 @@ def get_diff2(org, new):
     """method for getting the difference between the two images"""
     print("-------------------------------------------------------")
 
-    diff1 = gc.run_comp(org, new)
+    diff1 = meanblur.run_comp(org, new)
     print(f"mean blur difference = {diff1}")
 
-    diff2 = hd.compare_binging_hist_correlation(org, new)
+    diff2 = histdiff.compare_binging_hist_correlation(org, new)
     print(f"histogram difference = {diff2}")
 
-    diff3 = sed.get_score(org, new)
+    diff3 = sobel.get_score(org, new)
     print(f"sobel difference = {diff3}")
 
     diff4 = absdiff.absolute_img_diff(org, new)
@@ -67,24 +70,24 @@ def get_diff2(org, new):
     return round((diff1 + diff2 + diff3 + diff4) / 4, 4)
 
 
-def get_diff(org, new):
+def get_diff2(org, new):
     """method for getting the difference between the two images"""
 
     results = {}
 
     # Define functions to run on separate threads
     def run_mean_blur():
-        diff1 = gc.run_comp(org, new)
+        diff1 = meanblur.run_comp(org, new)
         print(f"mean blur difference = {diff1}")
         results['diff1'] = diff1
 
     def run_histogram():
-        diff2 = hd.compare_binging_hist_correlation(org, new)
+        diff2 = histdiff.compare_binging_hist_correlation(org, new)
         print(f"histogram difference = {diff2}")
         results['diff2'] = diff2
 
     def run_sobel_diff():
-        diff3 = sed.get_score(org, new)
+        diff3 = sobel.get_score(org, new)
         print(f"sobel difference = {diff3}")
         results['diff3'] = diff3
 
@@ -122,8 +125,8 @@ def get_diff(org, new):
     meanblurdiff_weight = 0.2
     histdiff_weight = 0.5
     sobeldiff_weight = 0.5
-    absdiff_weight = 0.5
-    fftdiff_weight = 1
+    absdiff_weight = 0.7
+    fftdiff_weight = 0.2
 
     weighted_sum = (meanblurdiff * meanblurdiff_weight) + \
                    (histdiff * histdiff_weight) + \
@@ -134,3 +137,60 @@ def get_diff(org, new):
     avg_diff = weighted_sum / 5
 
     return round(avg_diff, 3)
+
+
+def run_mean_blur(org, new, queue):
+    diff1 = meanblur.run_comp(org, new)
+    print(f"mean blur difference = {diff1}")
+    queue.put(('diff1', diff1))
+
+
+def run_histogram(org, new, queue):
+    diff2 = histdiff.compare_binging_hist_correlation(org, new)
+    print(f"histogram difference = {diff2}")
+    queue.put(('diff2', diff2))
+
+
+def run_sobel_diff(org, new, queue):
+    diff3 = sobel.get_score(org, new)
+    print(f"sobel difference = {diff3}")
+    queue.put(('diff3', diff3))
+
+
+def run_absolute_diff(org, new, queue):
+    diff4 = absdiff.absolute_img_diff(org, new)
+    print(f"absolute difference = {diff4}")
+    queue.put(('diff4', diff4))
+
+
+def run_fft(org, new, queue):
+    diff5 = comp_fft.compare_fft(org, new)
+    print(f"fft difference = {diff5}")
+    queue.put(('diff5', diff5))
+
+
+def calculate_weighted_average(results, weights):
+    weighted_sum = sum(value * weight for value, weight in zip(results, weights))
+    avg_diff = weighted_sum / sum(weights)
+    return round(avg_diff, 3)
+
+
+def get_diff(org, reprod):
+    queue = Queue()
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        executor.submit(run_mean_blur, org, reprod, queue)
+        executor.submit(run_histogram, org, reprod, queue)
+        executor.submit(run_sobel_diff, org, reprod, queue)
+        executor.submit(run_absolute_diff, org, reprod, queue)
+        executor.submit(run_fft, org, reprod, queue)
+
+    results = {}
+    while not queue.empty():
+        key, value = queue.get()
+        results[key] = value
+
+    weights = [0.2, 0.5, 0.5, 0.7, 0.2]
+    results_list = [results['diff1'], results['diff2'], results['diff3'], results['diff4'], results['diff5']]
+    weighted_average = calculate_weighted_average(results_list, weights)
+    print(f"Weighted Average Difference: {weighted_average}")
+    return weighted_average

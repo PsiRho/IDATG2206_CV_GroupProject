@@ -166,7 +166,7 @@ Low_limit_coefPearson = corr_coefPearson- Low_limit_coefPearson;  %finding the v
 
 figure; 
 barSettings = {};
-lineSettings = {High_limit_coefPearson', 'linestyle', 'none','linewidth',2}; 
+lineSettings = {High_limit_coefPearson', 'linestyle', 'none','linewidth',2};
 x = 1:CounterMetrics; % x-axis 
 errorbarbar(x, corr_coefPearson', Low_limit_coefPearson', barSettings, lineSettings);
 axis([0.5 CounterMetrics+0.5 0 1]) %setting the axis to go from 0 to 1 for the correlation

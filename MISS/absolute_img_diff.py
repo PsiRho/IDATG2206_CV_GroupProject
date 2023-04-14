@@ -1,6 +1,4 @@
 import numpy as np
-import cv2
-import matplotlib.pyplot as plt
 
 
 def absolute_img_diff(img1, img2):
