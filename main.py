@@ -1,15 +1,8 @@
-import cv2
-import threading
-import numpy as np
-import matplotlib.pyplot as plt
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 from MISS import histogram_diff as histdiff
-from MISS import mean_blur_comparisson as meanblur
 from MISS import sobel_edge_detection as sobel
 from MISS import absolute_img_diff as absdiff
-from MISS import comp_fft
 
 
 # def compare_img():
@@ -51,9 +44,9 @@ from MISS import comp_fft
 #    print(correlation)
 
 
-def run_mean_blur(org, new, queue):
-    diff1 = meanblur.run_comp(org, new)
-    print(f"mean blur difference = {diff1}")
+def run_absolute_diff(org, new, queue):
+    diff1 = absdiff.absolute_img_diff(org, new)
+    print(f"absolute difference = {diff1}")
     queue.put(('diff1', diff1))
 
 
@@ -69,16 +62,21 @@ def run_sobel_diff(org, new, queue):
     queue.put(('diff3', diff3))
 
 
-def run_absolute_diff(org, new, queue):
-    diff4 = absdiff.absolute_img_diff(org, new)
-    print(f"absolute difference = {diff4}")
-    queue.put(('diff4', diff4))
+def calculate_weights(results):
+    # define the minimum and maximum result values
+    min_result = min(results.values())
+    max_result = max(results.values())
 
+    if min_result == max_result:
+        return [1, 1, 1]
 
-def run_fft(org, new, queue):
-    diff5 = comp_fft.compare_fft(org, new)
-    print(f"fft difference = {diff5}")
-    queue.put(('diff5', diff5))
+    # map the result values to the weight scale
+    abs_weight = (results['diff1'] - min_result) / (max_result - min_result)
+    hist_weight = (results['diff2'] - min_result) / (max_result - min_result)
+    sobel_weight = (results['diff3'] - min_result) / (max_result - min_result)
+
+    # return the weights
+    return [abs_weight, hist_weight, sobel_weight]
 
 
 def calculate_weighted_average(results, weights):
@@ -87,28 +85,14 @@ def calculate_weighted_average(results, weights):
     return round(avg_diff, 3)
 
 
-def calculate_weights(results):
-    # define the minimum and maximum result values
-    min_result = min(results.values())
-    max_result = max(results.values())
-
-    # map the result values to the weight scale
-    hist_weight = (results['diff2'] - min_result) / (max_result - min_result)
-    sobel_weight = (results['diff3'] - min_result) / (max_result - min_result)
-    abs_weight = (results['diff4'] - min_result) / (max_result - min_result)
-
-    # return the weights
-    return [hist_weight, sobel_weight, abs_weight]
-
-
 def get_diff(org, reprod):
+
     queue = Queue()
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        # executor.submit(run_mean_blur, org, reprod, queue)
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        executor.submit(run_absolute_diff, org, reprod, queue)
         executor.submit(run_histogram, org, reprod, queue)
         executor.submit(run_sobel_diff, org, reprod, queue)
-        executor.submit(run_absolute_diff, org, reprod, queue)
-        # executor.submit(run_fft, org, reprod, queue)
 
     results = {}
     while not queue.empty():
@@ -116,8 +100,11 @@ def get_diff(org, reprod):
         results[key] = value
 
     weights = calculate_weights(results)
-    # results_list = [results['diff1'], results['diff2'], results['diff3'], results['diff4'], results['diff5']]
-    results_list = [results['diff2'], results['diff3'], results['diff4']]
+    results_list = [results['diff1'], results['diff2'], results['diff3']]
     weighted_average = calculate_weighted_average(results_list, weights)
+
+    print(f"Absolute Difference: {results['diff1']}")
+    print(f"Histogram Difference: {results['diff2']}")
+    print(f"Sobel Difference: {results['diff3']}")
     print(f"Weighted Average Difference: {weighted_average}")
     return weighted_average
