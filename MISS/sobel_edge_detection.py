@@ -52,49 +52,24 @@ def sobel_edge_detection(image):
     # Reshape the gradient image to the original image dimensions
     gradient = gradient.reshape(gray.shape)
 
-    # Convert the gradient image to a 8-bit unsigned integer
-    # TODO: denne endrer score en del. Prøv å comment ut og kjør igjen.
-    # gradient = np.uint8(gradient)
+    thresh = otsus(image, 256)
+    image[image < thresh] = 0
+    image[image >= thresh] = 255
 
     return gradient
 
 
-def sobel_edge_detection_inbuilt(img):
-    """Sobel Edge Detection, using OpenCV inbuilt function"""
-    gray = cv2.cv2tColor(img, cv2.COLOR_BGR2GRAY)
-
-    # Preallocate the matrices with zeros
-    I = np.zeros_like(gray)
-
-    grad_x = cv2.Sobel(gray, cv2.cv2_64F, 1, 0, ksize=3)
-    grad_y = cv2.Sobel(gray, cv2.cv2_64F, 0, 1, ksize=3)
-
-    abs_grad_x = cv2.convertScaleAbs(grad_x)
-    abs_grad_y = cv2.convertScaleAbs(grad_y)
-
-    I = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
-
-    thresh = otsus(I, 256)
-    I[I < thresh] = 0
-    I[I >= thresh] = 255
-
-    return I
-
-
 def get_score(original, copy):
-    """Get the score of the difference between two images"""
+    """Get the score of the difference between two images that have been passed through the Sobel Edge Detection"""
     # Flatten the images
     o_arr = original.flatten()
     m_arr = copy.flatten()
-    unlike = 0
 
     # Compare the images
-    for i in range(1, len(o_arr)):
-        if o_arr[i] != m_arr[i]:
-            unlike += 1
+    unlike = np.sum(o_arr != m_arr)
 
     # Return the score
-    return np.round(1 - unlike / ((len(o_arr) + len(m_arr)) / 2), 3)
+    return np.round(1 - unlike / np.mean([len(o_arr), len(m_arr)]), 3)
 
 
 def get_diff(org, new):
@@ -103,12 +78,3 @@ def get_diff(org, new):
     sobels_new = sobel_edge_detection(new)
     diff = get_score(sobels_org, sobels_new)
     return diff
-
-
-"""
-img1 = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-img2 = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l1.bmp')  #
-og = sobel_edge_detection(img1)
-new = sobel_edge_detection(img2)  #
-print(get_score(og, new))
-"""
