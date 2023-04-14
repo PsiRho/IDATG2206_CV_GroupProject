@@ -1,10 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2
-
-
-# make image grayscale
-# org = cv2.cvtColor(org, cv2.COLOR_BGR2GRAY)
 
 
 def histo(img: np.ndarray, bins: int = 256):
@@ -60,7 +55,6 @@ def compare_binging_hist_correlation(img1: np.ndarray, img2: np.ndarray):
         hist1, _ = np.histogram(img1, bins=256, range=[0, 256])
         hist2, _ = np.histogram(img2, bins=256, range=[0, 256])
 
-    # Normalize histograms
     hist1_norm = hist1 / img1.size
     hist2_norm = hist2 / img2.size
 
@@ -123,28 +117,3 @@ def plot_histo(a, img: np.ndarray):
     plt.xlabel("pixel value")
     plt.ylabel("number of pixels")
     plt.show()
-
-
-def main():
-    # Read image
-    print("start")
-    org = cv2.imread('../CIDIQ_Dataset/Images/Original/final01.bmp')
-    shit = cv2.imread('../CIDIQ_Dataset/Images/Reproduction/1_JPEG2000_Compression/final01_d1_l5.bmp')
-
-    print(compare_hist_correlation(org, shit))
-
-    hist_org = histo(org)
-    hist_shit = histo(shit)
-
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.plot(hist_org)
-    plt.subplot(2, 1, 2)
-    plt.plot(hist_shit)
-    plt.show()
-
-    cv2.imhist(org)
-
-
-if __name__ == '__main__':
-    main()
